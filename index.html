@@ -14,8 +14,6 @@
         .modal.hidden { opacity: 0; visibility: hidden; display: none; }
         @keyframes popIn { 0% { transform: scale(0.95); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
         .animate-pop { animation: popIn 0.2s ease-out forwards; }
-        
-        /* টোস্ট এনিমেশন ঠিক করা হয়েছে */
         #success-toast { transition: transform 0.4s cubic-bezier(0.18, 0.89, 0.32, 1.28), opacity 0.3s; }
         .toast-hidden { transform: translateY(150%); opacity: 0; pointer-events: none; }
     </style>
@@ -87,7 +85,7 @@
     </div>
 
     <script>
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyTdr0OgMK5lPPHd2brd_o8NUu59_vcV_Pccz3lkOl8yr1vLlJCGAhQ2VacEpVS6ZF6/exec";
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyuQZlWtQsRmodsjMbqjTqjPtEO9d-oUysUwmbqxhGgRhLYlbdgWoLZP2rEsap6uEnM/exec";
         let products = [];
         let cart = JSON.parse(localStorage.getItem('iconBazarCart')) || [];
 
@@ -114,13 +112,10 @@
             `).join('');
         }
 
-        // টোস্ট অটো-হাইড করার জন্য আপডেট
         function showToast() {
             const toast = document.getElementById('success-toast');
             toast.classList.remove('toast-hidden');
-            setTimeout(() => {
-                toast.classList.add('toast-hidden');
-            }, 3000);
+            setTimeout(() => { toast.classList.add('toast-hidden'); }, 3000);
         }
 
         function handleAction(action, pid) {
@@ -145,7 +140,6 @@
             document.getElementById('cart-total').innerText = cart.reduce((s, i) => s + parseFloat(i.price), 0);
         }
 
-        // ফর্ম সাবমিশন এবং শিটে ডাটা পাঠানো
         document.getElementById('profile-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             const userData = { 
@@ -153,20 +147,11 @@
                 phone: document.getElementById('user-phone').value, 
                 address: document.getElementById('user-address').value 
             };
-            
-            // লোকাল স্টোরেজে স্থায়ীভাবে সেভ
             localStorage.setItem('iconBazarUser', JSON.stringify(userData));
-
-            // গুগল শিটে পাঠানো (Sheet2)
             try {
-                await fetch(SCRIPT_URL, { 
-                    method: 'POST', 
-                    mode: 'no-cors', 
-                    body: JSON.stringify(userData) 
-                });
-            } catch (err) { console.log("Sheet backup triggered"); }
-
-            location.reload();
+                await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(userData) });
+                location.reload();
+            } catch (err) { console.log("Network error"); }
         });
 
         function loadProfile() {
