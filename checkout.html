@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout | Icon Bazar BD</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;500;600;700&display=swap');
+        body { font-family: 'Hind Siliguri', sans-serif; background-color: #f4f6f9; }
+    </style>
+</head>
+<body class="pb-24">
+
+    <header class="bg-white sticky top-0 z-50 shadow-sm flex items-center px-4 py-3">
+        <a href="index.html" class="mr-4 text-gray-600"><i class="fas fa-arrow-left text-lg"></i></a>
+        <h1 class="text-lg font-bold text-gray-700">Checkout</h1>
+    </header>
+
+    <main class="max-w-md mx-auto space-y-3 mt-2">
+        
+        <div id="address-section" class="bg-white p-4 flex items-start gap-3 relative cursor-pointer border-b">
+            <i class="fas fa-map-marker-alt text-blue-600 mt-1"></i>
+            <div class="flex-1">
+                <p id="check-user-name" class="font-bold text-gray-800 text-sm">Loading... <span class="text-gray-400 font-normal ml-2"></span></p>
+                <div class="flex items-center gap-2 mt-1">
+                    <span class="bg-blue-600 text-white text-[10px] px-1.5 rounded font-bold uppercase">Home</span>
+                    <p id="check-user-address" class="text-xs text-gray-600 line-clamp-1">ঠিকানা লোড হচ্ছে...</p>
+                </div>
+            </div>
+            <i class="fas fa-chevron-right text-gray-300 self-center"></i>
+        </div>
+
+        <div class="bg-white">
+            <div class="px-4 py-3 border-b flex items-center gap-2">
+                <i class="fas fa-store text-gray-400 text-sm"></i>
+                <span class="text-xs font-bold text-gray-700 uppercase">Icon Bazar Official Store</span>
+            </div>
+            
+            <div id="checkout-items-list"></div>
+
+            <div class="p-4 border-t space-y-3">
+                <div class="flex justify-between items-center text-xs">
+                    <span class="text-gray-500">Delivery Option</span>
+                    <span class="text-blue-600 font-bold">Standard Delivery</span>
+                </div>
+                <div class="bg-blue-50/50 border border-blue-100 p-3 rounded-lg flex justify-between items-center">
+                    <div>
+                        <p class="text-sm font-bold text-gray-800">Standard Delivery</p>
+                        <p id="delivery-date" class="text-[11px] text-gray-500"></p>
+                    </div>
+                    <span class="text-sm font-bold">৳ 130</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white p-4 space-y-3 shadow-sm">
+            <div class="flex justify-between text-sm">
+                <span class="text-gray-500">Merchandise Subtotal</span>
+                <span class="font-bold text-gray-800">৳ <span id="subtotal">0</span></span>
+            </div>
+            <div class="flex justify-between text-sm">
+                <span class="text-gray-500">Shipping Fee (Pan Bangladesh)</span>
+                <span class="font-bold text-gray-800">৳ 130</span>
+            </div>
+            <div class="flex justify-between items-center pt-2 border-t text-sm">
+                <span class="text-gray-500">Voucher & Code</span>
+                <span class="text-gray-400 text-xs italic">Enter your voucher code <i class="fas fa-chevron-right ml-1"></i></span>
+            </div>
+        </div>
+    </main>
+
+    <div class="fixed bottom-0 left-0 w-full bg-white border-t px-4 py-3 flex justify-between items-center shadow-lg">
+        <div class="text-left flex-1">
+            <p class="text-[10px] text-gray-400 uppercase font-bold">Total Amount</p>
+            <p class="text-lg font-bold text-[#f85606]">৳ <span id="final-total">0</span></p>
+        </div>
+        <button onclick="goToPayment()" class="bg-[#f85606] text-white px-10 py-3 rounded text-sm font-bold shadow-lg active:scale-95 transition-transform uppercase">Proceed to Pay</button>
+    </div>
+
+    <script>
+        // ডেটা লোড করা
+        const cart = JSON.parse(localStorage.getItem('iconBazarCart')) || [];
+        const user = JSON.parse(localStorage.getItem('iconBazarUser')) || { name: 'Guest User', address: 'No address set', phone: 'N/A' };
+        const SHIPPING_FEE = 130;
+
+        window.onload = function() {
+            if (cart.length === 0) {
+                window.location.href = "index.html";
+                return;
+            }
+
+            // ইউজার ডাটা সেট করা
+            document.getElementById('check-user-name').innerHTML = `${user.name} <span class="text-gray-400 font-normal ml-2">${user.phone}</span>`;
+            document.getElementById('check-user-address').innerText = user.address;
+
+            // ডেট ক্যালকুলেশন (আজ থেকে ৭ দিন)
+            const today = new Date();
+            const delDate = new Date();
+            delDate.setDate(today.getDate() + 7);
+            const options = { day: 'numeric', month: 'short' };
+            const dateRange = today.toLocaleDateString('en-GB', options) + " - " + delDate.toLocaleDateString('en-GB', options);
+            document.getElementById('delivery-date').innerHTML = `<i class="fas fa-truck mr-1"></i> Guaranteed by ${dateRange}`;
+
+            // প্রোডাক্ট লিস্ট রেন্ডার করা
+            const listContainer = document.getElementById('checkout-items-list');
+            let subtotal = 0;
+
+            listContainer.innerHTML = cart.map(item => {
+                subtotal += item.price;
+                return `
+                    <div class="p-4 flex gap-4 border-b border-gray-50">
+                        <img src="${item.img}" class="w-20 h-20 object-cover rounded border bg-gray-50">
+                        <div class="flex-1">
+                            <h3 class="text-xs font-medium text-gray-800 line-clamp-2">${item.name}</h3>
+                            <p class="text-[10px] text-gray-400 mt-1">Color: Default</p>
+                            <div class="flex justify-between items-end mt-2">
+                                <span class="text-sm font-bold text-gray-900">৳ ${item.price}</span>
+                                <span class="text-xs text-gray-500 font-bold uppercase">Qty: 1</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            // ফাইনাল ক্যালকুলেশন
+            document.getElementById('subtotal').innerText = subtotal;
+            document.getElementById('final-total').innerText = subtotal + SHIPPING_FEE;
+        };
+
+        function goToPayment() {
+            // পেমেন্ট পেজে রিডাইরেক্ট
+            window.location.href = "payment.html";
+        }
+    </script>
+
+</body>
+</html>

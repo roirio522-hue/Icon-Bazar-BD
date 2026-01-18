@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Method | Icon Bazar BD</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;500;600;700&display=swap');
+        body { font-family: 'Hind Siliguri', sans-serif; background-color: #f8fafc; }
+        
+        .payment-card { transition: all 0.3s ease; cursor: pointer; border: 1.5px solid transparent; }
+        .payment-card:active { transform: scale(0.97); }
+        .payment-card:hover { border-color: #3b82f6; background-color: #eff6ff; }
+        
+        @keyframes popIn { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        .animate-pop { animation: popIn 0.3s ease-out forwards; }
+        .modal-overlay { background: rgba(0, 0, 0, 0.7); backdrop-filter: blur(5px); }
+    </style>
+</head>
+<body class="pb-32">
+
+    <header class="bg-white sticky top-0 z-50 shadow-sm flex items-center px-4 py-4">
+        <a href="checkout.html" class="mr-4 text-gray-600"><i class="fas fa-arrow-left text-lg"></i></a>
+        <h1 class="text-lg font-bold text-gray-800">Select Payment Method</h1>
+    </header>
+
+    <main class="max-w-md mx-auto p-4 space-y-4">
+        
+        <h3 class="text-xs font-bold text-gray-400 uppercase tracking-widest pl-1">Online Payment (Full)</h3>
+        
+        <div onclick="openDirectPay('bKash', '01984918437')" class="payment-card bg-white p-5 rounded-2xl shadow-sm flex items-center gap-4">
+            <div class="w-12 h-12 rounded-xl bg-[#e2136e] flex items-center justify-center">
+                <img src="https://www.logo.wine/a/logo/BKash/BKash-Logo.wine.svg" class="w-10 h-10 object-contain brightness-0 invert">
+            </div>
+            <div class="flex-1">
+                <p class="text-sm font-bold text-gray-800">bKash</p>
+                <p class="text-[10px] text-gray-400">Personal: 01984918437</p>
+            </div>
+            <i class="fas fa-chevron-right text-gray-300"></i>
+        </div>
+
+        <div onclick="openDirectPay('Nagad', '01928187197')" class="payment-card bg-white p-5 rounded-2xl shadow-sm flex items-center gap-4">
+            <div class="w-12 h-12 rounded-xl bg-[#f7941d] flex items-center justify-center">
+                <img src="https://download.logo.wine/logo/Nagad/Nagad-Logo.wine.png" class="w-10 h-10 object-contain brightness-0 invert">
+            </div>
+            <div class="flex-1">
+                <p class="text-sm font-bold text-gray-800">Nagad</p>
+                <p class="text-[10px] text-gray-400">Personal: 01928187197</p>
+            </div>
+            <i class="fas fa-chevron-right text-gray-300"></i>
+        </div>
+
+        <h3 class="text-xs font-bold text-gray-400 uppercase tracking-widest pl-1 pt-4">Offline Payment</h3>
+
+        <div onclick="showCodNotice()" class="payment-card bg-white p-5 rounded-2xl shadow-sm flex items-center gap-4">
+            <div class="w-12 h-12 rounded-xl bg-gray-800 flex items-center justify-center">
+                <i class="fas fa-truck text-white text-xl"></i>
+            </div>
+            <div class="flex-1">
+                <p class="text-sm font-bold text-gray-800">Cash on Delivery</p>
+                <p class="text-[10px] text-gray-400">Pay after receiving product</p>
+            </div>
+            <i class="fas fa-chevron-right text-gray-300"></i>
+        </div>
+    </main>
+
+    <div id="cod-notice-modal" class="fixed inset-0 z-[100] modal-overlay hidden flex items-center justify-center p-6">
+        <div class="bg-white w-full max-w-sm rounded-3xl p-6 shadow-2xl animate-pop">
+            <div class="text-center mb-6">
+                <div class="w-16 h-16 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-info-circle text-3xl"></i>
+                </div>
+                <h3 class="text-xl font-bold text-gray-800 mb-2">অগ্রিম পেমেন্ট নোটিশ</h3>
+                <p class="text-sm text-gray-600 leading-relaxed">
+                    ক্যাশ অন ডেলিভারির ক্ষেত্রে ডেলিভারি চার্জ <span class="font-bold text-blue-600 text-lg">৳ ১৩০</span> অগ্রিম প্রদান করতে হবে।
+                </p>
+            </div>
+            
+            <p class="text-[10px] font-bold text-gray-400 uppercase mb-3 text-center">পেমেন্ট মেথড সিলেক্ট করুন</p>
+            <div class="grid grid-cols-2 gap-3 mb-6">
+                <button onclick="openCodPay('bKash', '01984918437')" class="flex flex-col items-center p-3 border rounded-2xl hover:bg-pink-50 transition">
+                    <img src="https://www.logo.wine/a/logo/BKash/BKash-Logo.wine.svg" class="w-10 h-10">
+                    <span class="text-xs font-bold mt-1">bKash</span>
+                </button>
+                <button onclick="openCodPay('Nagad', '01928187197')" class="flex flex-col items-center p-3 border rounded-2xl hover:bg-orange-50 transition">
+                    <img src="https://download.logo.wine/logo/Nagad/Nagad-Logo.wine.png" class="w-10 h-10">
+                    <span class="text-xs font-bold mt-1">Nagad</span>
+                </button>
+            </div>
+            <button onclick="closeModal('cod-notice-modal')" class="w-full py-3 text-gray-400 text-sm font-medium">ফিরে যান</button>
+        </div>
+    </div>
+
+    <div id="trx-modal" class="fixed inset-0 z-[110] modal-overlay hidden flex items-center justify-center p-6">
+        <div class="bg-white w-full max-w-sm rounded-3xl p-6 shadow-2xl animate-pop relative">
+            <button onclick="closeModal('trx-modal')" class="absolute top-4 right-4 text-gray-300"><i class="fas fa-times-circle text-xl"></i></button>
+            
+            <h3 id="trx-title" class="text-lg font-bold text-center mb-4"></h3>
+            
+            <div class="bg-gray-50 p-4 rounded-2xl mb-6 text-center border-2 border-dashed border-gray-200">
+                <p class="text-[10px] text-gray-400 font-bold uppercase mb-1">এই নাম্বারে সেন্ড মানি করুন</p>
+                <p id="trx-number" class="text-2xl font-black text-blue-600 tracking-wider"></p>
+                <p id="trx-amount-text" class="text-xs font-bold text-red-500 mt-1"></p>
+            </div>
+
+            <div class="space-y-4">
+                <div>
+                    <label class="text-[11px] font-bold text-gray-400 ml-1">TRANSACTION ID (TrxID)</label>
+                    <input type="text" id="trx-input" placeholder="8N7X2M..." class="w-full bg-gray-50 border-2 border-transparent focus:border-blue-500 p-4 rounded-2xl outline-none transition-all font-mono text-center text-lg uppercase">
+                </div>
+                <button onclick="processFinalOrder()" class="w-full bg-blue-600 text-white py-4 rounded-2xl font-bold shadow-lg shadow-blue-200 active:scale-95 transition-transform">অর্ডার নিশ্চিত করুন</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="success-overlay" class="fixed inset-0 z-[200] bg-white hidden flex flex-col items-center justify-center p-10 text-center">
+        <div class="w-24 h-24 bg-green-100 text-green-600 rounded-full flex items-center justify-center mb-6 animate-pop">
+            <i class="fas fa-check-circle text-6xl"></i>
+        </div>
+        <h2 class="text-2xl font-bold text-gray-800 mb-2">অর্ডার সফল হয়েছে!</h2>
+        <p class="text-sm text-gray-500 mb-10">আপনার ট্রানজেকশন আইডি ভেরিফাই করা হচ্ছে। খুব শীঘ্রই আমাদের প্রতিনিধি যোগাযোগ করবে।</p>
+        <button onclick="window.location.href='index.html'" class="w-full max-w-xs bg-gray-900 text-white py-4 rounded-2xl font-bold shadow-xl">হোম পেজে ফিরে যান</button>
+    </div>
+
+    <div class="fixed bottom-0 left-0 w-full bg-white border-t px-8 py-5 flex justify-between items-center shadow-2xl">
+        <div>
+            <p class="text-gray-400 text-[10px] font-bold uppercase">Total Payable</p>
+            <p class="text-2xl font-black text-blue-600">৳ <span id="display-price">0</span></p>
+        </div>
+        <div class="text-right">
+            <i class="fas fa-shield-alt text-green-500 text-xl"></i>
+            <p class="text-[8px] text-gray-400 font-bold uppercase">Secure<br>Payment</p>
+        </div>
+    </div>
+
+    <script>
+        const cart = JSON.parse(localStorage.getItem('iconBazarCart')) || [];
+        const SHIPPING_FEE = 130;
+        let finalAmount = 0;
+
+        window.onload = function() {
+            let subtotal = cart.reduce((s, i) => s + i.price, 0);
+            finalAmount = subtotal + SHIPPING_FEE;
+            document.getElementById('display-price').innerText = finalAmount;
+        };
+
+        // ক্যাশ অন ডেলিভারি নোটিশ দেখানো
+        function showCodNotice() {
+            document.getElementById('cod-notice-modal').classList.remove('hidden');
+        }
+
+        // ক্যাশ অন ডেলিভারির ভেতর থেকে বিকাশ/নগদ সিলেক্ট করা
+        function openCodPay(method, number) {
+            document.getElementById('cod-notice-modal').classList.add('hidden');
+            document.getElementById('trx-title').innerText = method + " পেমেন্ট (COD)";
+            document.getElementById('trx-number').innerText = number;
+            document.getElementById('trx-amount-text').innerText = "ডেলিভারি চার্জ ৳ ১৩০ সেন্ড মানি করুন";
+            document.getElementById('trx-modal').classList.remove('hidden');
+        }
+
+        // সরাসরি ফুল পেমেন্ট অপশন
+        function openDirectPay(method, number) {
+            document.getElementById('trx-title').innerText = method + " ফুল পেমেন্ট";
+            document.getElementById('trx-number').innerText = number;
+            document.getElementById('trx-amount-text').innerText = "মোট ৳ " + finalAmount + " সেন্ড মানি করুন";
+            document.getElementById('trx-modal').classList.remove('hidden');
+        }
+
+        function closeModal(id) {
+            document.getElementById(id).classList.add('hidden');
+        }
+
+        function processFinalOrder() {
+            const trxId = document.getElementById('trx-input').value;
+            if (trxId.length < 5) {
+                alert("অনুগ্রহ করে সঠিক Transaction ID প্রদান করুন।");
+                return;
+            }
+            document.getElementById('trx-modal').classList.add('hidden');
+            document.getElementById('success-overlay').classList.remove('hidden');
+            localStorage.removeItem('iconBazarCart');
+        }
+    </script>
+</body>
+</html>

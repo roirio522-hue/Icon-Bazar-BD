@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Icon Bazar BD | Premium Online Shop</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;600;700&display=swap');
+        body { font-family: 'Hind Siliguri', sans-serif; scroll-behavior: smooth; overflow-x: hidden; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .modal { transition: opacity 0.3s ease, visibility 0.3s ease; }
+        .modal.hidden { opacity: 0; visibility: hidden; display: none; }
+        @keyframes popIn { 0% { transform: scale(0.95); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+        .animate-pop { animation: popIn 0.2s ease-out forwards; }
+        #success-toast { transition: transform 0.4s cubic-bezier(0.18, 0.89, 0.32, 1.28); }
+        .toast-hidden { transform: translateY(150%); }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800">
+
+    <header class="bg-white shadow-sm sticky top-0 z-50">
+        <div class="container mx-auto px-4">
+            <div class="flex justify-between items-center py-3 border-b border-gray-100">
+                <div class="flex items-center gap-3">
+                    <h1 class="text-xl font-bold text-blue-600 tracking-tighter uppercase">ICON BAZAR BD</h1>
+                </div>
+                <div class="flex items-center gap-5">
+                    <div class="relative cursor-pointer" onclick="toggleCart()">
+                        <i class="fas fa-shopping-cart text-2xl text-gray-600"></i>
+                        <span id="cart-count" class="absolute -top-2 -right-2 bg-red-500 text-white text-[10px] font-bold rounded-full px-1.5 border-2 border-white">0</span>
+                    </div>
+                    <div onclick="toggleAccountModal()" class="cursor-pointer">
+                        <div id="logged-out-icon" class="w-9 h-9 bg-gray-100 rounded-full flex items-center justify-center border">
+                            <i class="fas fa-user text-gray-400"></i>
+                        </div>
+                        <img id="logged-in-photo" class="w-9 h-9 rounded-full border hidden shadow-sm" src="" alt="User">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-4 py-6">
+        <h3 class="text-lg font-bold flex items-center gap-2 mb-5"><i class="fas fa-bolt text-yellow-500"></i> Flash Sale</h3>
+        <div id="product-container" class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4"></div>
+    </main>
+
+    <div id="success-toast" class="fixed bottom-10 left-1/2 -translate-x-1/2 z-[200] bg-[#1a1c24] text-white px-6 py-3 rounded-full shadow-2xl flex items-center gap-3 toast-hidden w-[90%] max-w-sm justify-between">
+        <div class="flex items-center gap-2">
+            <i class="fas fa-check-circle text-green-400 text-lg"></i>
+            <span class="text-sm font-medium">Successfully added to cart</span>
+        </div>
+        <button onclick="toggleCart()" class="text-blue-400 text-xs font-bold underline">Go To Cart</button>
+    </div>
+
+    <div id="product-modal" class="modal hidden fixed inset-0 z-[150] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+        <div class="bg-white w-full max-w-lg rounded-2xl overflow-hidden animate-pop relative">
+            <button onclick="closeProductModal()" class="absolute top-4 right-4 text-gray-400 hover:text-red-500 z-10"><i class="fas fa-times-circle text-2xl"></i></button>
+            <div id="modal-content" class="p-6"></div>
+        </div>
+    </div>
+
+    <div id="cart-sidebar" class="fixed top-0 right-0 h-full w-80 bg-white shadow-2xl translate-x-full transition-transform duration-300 z-[110] p-6 flex flex-col">
+        <div class="flex justify-between items-center border-b pb-4 mb-4"><h3 class="text-xl font-bold">🛒 Shopping Bag</h3><button onclick="toggleCart()" class="text-red-500"><i class="fas fa-times text-2xl"></i></button></div>
+        <div id="cart-items" class="flex-grow space-y-4 overflow-y-auto"></div>
+        <div class="border-t mt-6 pt-4">
+            <p class="flex justify-between font-bold mb-4 text-lg"><span>Total:</span> <span id="cart-total">0</span> ৳</p>
+            <button onclick="checkout()" class="w-full bg-[#f85606] text-white py-3 rounded font-bold uppercase shadow-lg">Confirm Order</button>
+        </div>
+    </div>
+
+    <div id="account-modal" class="modal hidden fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black bg-opacity-50">
+        <div class="bg-white w-full max-w-md rounded-lg p-8 animate-pop relative">
+            <button onclick="toggleAccountModal()" class="absolute top-4 right-4 text-gray-400"><i class="fas fa-times-circle text-2xl"></i></button>
+            <h3 class="text-lg font-bold text-center uppercase mb-6">Login / Sign Up</h3>
+            <form id="profile-form" class="space-y-4">
+                <input type="text" id="user-phone" placeholder="মোবাইল নম্বর" class="w-full border p-3 rounded text-sm outline-none" required>
+                <input type="text" id="user-name" placeholder="আপনার নাম" class="w-full border p-3 rounded text-sm outline-none" required>
+                <textarea id="user-address" placeholder="ঠিকানা" class="w-full border p-3 rounded text-sm outline-none" rows="3" required></textarea>
+                <button type="submit" class="w-full bg-blue-600 text-white py-3 rounded font-bold uppercase">Save & Login</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyTdr0OgMK5lPPHd2brd_o8NUu59_vcV_Pccz3lkOl8yr1vLlJCGAhQ2VacEpVS6ZF6/exec";
+        let products = [];
+        let cart = JSON.parse(localStorage.getItem('iconBazarCart')) || [];
+
+        window.onload = function() { loadProducts(); loadProfile(); updateCart(); };
+
+        async function loadProducts() {
+            try {
+                const response = await fetch(SCRIPT_URL + "?action=getProducts");
+                products = await response.json();
+                displayProducts();
+            } catch (e) { console.log("Error loading products"); }
+        }
+
+        function displayProducts() {
+            const container = document.getElementById('product-container');
+            if (products.length === 0) { container.innerHTML = ""; return; }
+            container.innerHTML = products.map(p => `
+                <div class="bg-white rounded p-3 border border-gray-100 hover:shadow-md cursor-pointer" onclick="openProductModal(${p.id})">
+                    <img src="${p.img}" class="w-full h-32 object-contain mb-3">
+                    <h4 class="text-xs font-semibold h-8 overflow-hidden mb-1 text-gray-700">${p.name}</h4>
+                    <p class="text-blue-600 font-bold text-sm mb-3">৳ ${p.price}</p>
+                    <button onclick="event.stopPropagation(); handleAction('add', ${p.id})" class="w-full border border-blue-600 text-blue-600 py-1.5 rounded text-[10px] font-bold hover:bg-blue-600 hover:text-white transition uppercase">ADD TO CART</button>
+                </div>
+            `).join('');
+        }
+
+        function handleAction(action, pid) {
+            if(!localStorage.getItem('iconBazarUser')) { toggleAccountModal(); return; }
+            const p = products.find(i => i.id == pid);
+            if(!cart.find(i => i.id == pid)) {
+                cart.push(p);
+                localStorage.setItem('iconBazarCart', JSON.stringify(cart));
+                showToast();
+            }
+            updateCart();
+        }
+
+        function showToast() {
+            const toast = document.getElementById('success-toast');
+            toast.classList.remove('toast-hidden');
+            setTimeout(() => toast.classList.add('toast-hidden'), 3000);
+        }
+
+        function updateCart() {
+            document.getElementById('cart-count').innerText = cart.length;
+            document.getElementById('cart-items').innerHTML = cart.map((i, idx) => `
+                <div class="flex justify-between items-center bg-gray-50 p-3 rounded border text-xs">
+                    <div><p class="font-bold">${i.name}</p><p class="text-blue-600">৳ ${i.price}</p></div>
+                    <button onclick="remove(${idx})" class="text-red-400 p-2"><i class="fas fa-trash"></i></button>
+                </div>
+            `).join('');
+            document.getElementById('cart-total').innerText = cart.reduce((s, i) => s + parseFloat(i.price), 0);
+        }
+
+        function openProductModal(id) {
+            const p = products.find(item => item.id == id);
+            if(!p) return;
+            document.getElementById('modal-content').innerHTML = `
+                <div class="flex flex-col items-center">
+                    <img src="${p.img}" class="w-48 h-48 object-contain mb-4">
+                    <h2 class="text-lg font-bold text-center">${p.name}</h2>
+                    <p class="text-xl font-bold text-blue-600 my-3">৳ ${p.price}</p>
+                    <button onclick="handleAction('add', ${p.id}); closeProductModal();" class="w-full bg-blue-600 text-white py-3 rounded font-bold uppercase shadow-lg">Add to Cart</button>
+                </div>
+            `;
+            document.getElementById('product-modal').classList.remove('hidden');
+        }
+
+        document.getElementById('profile-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const userData = { 
+                name: document.getElementById('user-name').value, 
+                phone: document.getElementById('user-phone').value, 
+                address: document.getElementById('user-address').value 
+            };
+            localStorage.setItem('iconBazarUser', JSON.stringify(userData));
+            await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(userData) });
+            location.reload();
+        });
+
+        function remove(idx) { cart.splice(idx, 1); localStorage.setItem('iconBazarCart', JSON.stringify(cart)); updateCart(); }
+        function checkout() { if (cart.length === 0) return; window.location.href = "checkout.html"; }
+        function closeProductModal() { document.getElementById('product-modal').classList.add('hidden'); }
+        function toggleAccountModal() { document.getElementById('account-modal').classList.toggle('hidden'); }
+        function toggleCart() { document.getElementById('cart-sidebar').classList.toggle('translate-x-full'); }
+        function loadProfile() {
+            const user = JSON.parse(localStorage.getItem('iconBazarUser'));
+            if(user) {
+                document.getElementById('logged-out-icon').classList.add('hidden');
+                document.getElementById('logged-in-photo').classList.remove('hidden');
+                document.getElementById('logged-in-photo').src = 'https://api.dicebear.com/7.x/avataaars/svg?seed=' + user.name;
+            }
+        }
+    </script>
+</body>
+</html>

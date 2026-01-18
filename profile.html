@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Account Information | Icon Bazar BD</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&display=swap');
+        
+        body { 
+            font-family: 'Hind Siliguri', sans-serif; 
+            background-color: #f4f6f9; 
+        }
+
+        /* স্মুথ এনিমেশন */
+        .fade-in { animation: fadeIn 0.4s ease-in-out; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .modal-animate { animation: slideUp 0.3s ease-out; }
+        @keyframes slideUp {
+            from { transform: translateY(100%); }
+            to { transform: translateY(0); }
+        }
+
+        .info-card {
+            transition: all 0.2s;
+        }
+        .info-card:active {
+            background-color: #f0f0f0;
+            transform: scale(0.98);
+        }
+
+        /* শ্যাডো ইফেক্ট */
+        .custom-shadow { box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+    </style>
+</head>
+<body class="text-gray-800">
+
+    <header class="bg-white sticky top-0 z-50 custom-shadow border-b">
+        <div class="flex items-center px-4 py-4">
+            <a href="index.html" class="p-2 hover:bg-gray-100 rounded-full transition">
+                <i class="fas fa-arrow-left text-gray-600 text-lg"></i>
+            </a>
+            <h1 class="text-lg font-bold ml-4 text-gray-700">Account Information</h1>
+        </div>
+    </header>
+
+    <main class="max-w-md mx-auto mt-4 px-2 fade-in">
+        <div class="bg-white rounded-xl overflow-hidden custom-shadow mb-6">
+            
+            <div onclick="editField('name', 'Full Name')" class="info-card flex justify-between items-center p-5 border-b cursor-pointer">
+                <div>
+                    <p class="text-xs text-gray-400 font-semibold uppercase tracking-wider">Full Name</p>
+                    <p id="display-name" class="text-sm font-medium mt-1">Rafid Ahammed</p>
+                </div>
+                <i class="fas fa-chevron-right text-gray-300"></i>
+            </div>
+
+            <div onclick="editField('phone', 'Mobile Number')" class="info-card flex justify-between items-center p-5 border-b cursor-pointer">
+                <div>
+                    <p class="text-xs text-gray-400 font-semibold uppercase tracking-wider">Mobile Number</p>
+                    <p id="display-phone" class="text-sm font-medium mt-1">019XXXXXXXX</p>
+                </div>
+                <i class="fas fa-chevron-right text-gray-300"></i>
+            </div>
+
+            <div class="info-card flex justify-between items-center p-5 border-b opacity-80">
+                <div>
+                    <p class="text-xs text-gray-400 font-semibold uppercase tracking-wider">Change Email</p>
+                    <p id="display-email" class="text-sm font-medium mt-1">ra*****@gmail.com</p>
+                </div>
+                <i class="fas fa-lock text-gray-200 text-xs"></i>
+            </div>
+
+            <div class="info-card flex justify-between items-center p-5 border-b cursor-pointer">
+                <div>
+                    <p class="text-xs text-gray-400 font-semibold uppercase tracking-wider">Gender</p>
+                    <p class="text-sm font-medium mt-1">Male</p>
+                </div>
+                <i class="fas fa-chevron-right text-gray-300"></i>
+            </div>
+
+            <div class="info-card flex justify-between items-center p-5 cursor-pointer">
+                <div>
+                    <p class="text-xs text-gray-400 font-semibold uppercase tracking-wider">Birthday</p>
+                    <p class="text-sm font-medium mt-1">1999-02-26</p>
+                </div>
+                <i class="fas fa-chevron-right text-gray-300"></i>
+            </div>
+
+        </div>
+
+        <button onclick="logout()" class="w-full bg-white text-red-500 font-bold py-4 rounded-xl custom-shadow hover:bg-red-50 transition">
+            Sign Out
+        </button>
+    </main>
+
+    <div id="edit-modal" class="fixed inset-0 bg-black/40 backdrop-blur-sm hidden z-[100] flex items-end sm:items-center justify-center p-0 sm:p-4">
+        <div class="bg-white w-full max-w-md rounded-t-3xl sm:rounded-2xl overflow-hidden modal-animate">
+            <div class="p-6">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 id="modal-title" class="text-xl font-bold text-gray-800 tracking-tight">Update Info</h3>
+                    <button onclick="closeModal()" class="text-gray-400 hover:text-gray-600">
+                        <i class="fas fa-times-circle text-2xl"></i>
+                    </button>
+                </div>
+                
+                <div class="relative mb-8">
+                    <input type="text" id="edit-input" 
+                        class="w-full border-b-2 border-blue-100 p-3 text-lg outline-none focus:border-blue-600 transition-all placeholder:text-gray-300" 
+                        placeholder="আপনার তথ্য লিখুন...">
+                </div>
+
+                <div class="grid grid-cols-2 gap-4 mb-2">
+                    <button onclick="closeModal()" class="py-3 px-4 rounded-xl border-2 border-gray-100 font-bold text-gray-500 hover:bg-gray-50">
+                        বাতিল
+                    </button>
+                    <button onclick="saveEdit()" class="py-3 px-4 rounded-xl bg-blue-600 text-white font-bold shadow-lg shadow-blue-200 hover:bg-blue-700 active:scale-95 transition">
+                        সেভ করুন
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentUser = JSON.parse(localStorage.getItem('iconBazarUser')) || {
+            name: "Rafid Ahammed",
+            phone: "019XXXXXXXX",
+            email: "user@gmail.com"
+        };
+        let currentEditingKey = '';
+
+        function loadInfo() {
+            document.getElementById('display-name').innerText = currentUser.name;
+            document.getElementById('display-phone').innerText = currentUser.phone;
+            
+            if(currentUser.email) {
+                const email = currentUser.email;
+                const hidden = email.replace(/(.{2})(.*)(?=@)/, (gp1, gp2, gp3) => gp2 + "*".repeat(5));
+                document.getElementById('display-email').innerText = hidden;
+            }
+        }
+
+        function editField(key, label) {
+            currentEditingKey = key;
+            document.getElementById('modal-title').innerText = label + " পরিবর্তন";
+            document.getElementById('edit-input').value = currentUser[key] || '';
+            document.getElementById('edit-modal').classList.remove('hidden');
+            setTimeout(() => document.getElementById('edit-input').focus(), 100);
+        }
+
+        function closeModal() {
+            document.getElementById('edit-modal').classList.add('hidden');
+        }
+
+        function saveEdit() {
+            const val = document.getElementById('edit-input').value.trim();
+            if(!val) return;
+
+            currentUser[currentEditingKey] = val;
+            localStorage.setItem('iconBazarUser', JSON.stringify(currentUser));
+            loadInfo();
+            closeModal();
+        }
+
+        function logout() {
+            localStorage.removeItem('iconBazarUser');
+            window.location.href = 'index.html';
+        }
+
+        window.onload = loadInfo;
+    </script>
+</body>
+</html>

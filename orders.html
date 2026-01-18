@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Orders | Icon Bazar BD</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;500;600;700&display=swap');
+        body { font-family: 'Hind Siliguri', sans-serif; background-color: #f4f6f9; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+    </style>
+</head>
+<body>
+
+    <header class="bg-white sticky top-0 z-50 shadow-sm">
+        <div class="flex items-center px-4 py-3 border-b">
+            <a href="index.html" class="p-2 hover:bg-gray-100 rounded-full transition">
+                <i class="fas fa-arrow-left text-gray-600 text-lg"></i>
+            </a>
+            <h1 class="text-lg font-bold ml-4 text-gray-700">My Orders</h1>
+        </div>
+        
+        <div class="bg-white border-b px-6 py-3">
+            <span class="text-sm font-bold text-[#f85606] border-b-2 border-[#f85606] pb-3">All Orders</span>
+        </div>
+    </header>
+
+    <main class="max-w-md mx-auto p-2 space-y-3 mt-2">
+
+        <div class="bg-white rounded-lg shadow-sm overflow-hidden border border-gray-100">
+            <div class="flex justify-between items-center px-4 py-2 border-b bg-gray-50">
+                <span class="text-[10px] font-bold text-blue-600 uppercase tracking-widest"><i class="fas fa-store mr-1"></i> Icon Fashion</span>
+                <span class="text-[11px] text-green-600 font-bold uppercase">Completed</span>
+            </div>
+            <div class="p-4 flex gap-4">
+                <img src="https://via.placeholder.com/80" class="w-20 h-20 object-cover rounded border">
+                <div class="flex-1">
+                    <h3 class="text-sm font-medium text-gray-800 line-clamp-2">Premium Aviator Sunglasses - Black Frame</h3>
+                    <p class="text-[11px] text-gray-400 mt-1">Color Family: Black</p>
+                    <div class="flex justify-between items-end mt-2">
+                        <span class="text-sm font-bold text-gray-900">৳ 450</span>
+                        <span class="text-xs text-gray-500">Qty: 1</span>
+                    </div>
+                </div>
+            </div>
+            <div class="px-4 py-3 border-t flex justify-between items-center">
+                <p class="text-xs text-gray-500">Total (1 Item): <span class="font-bold text-gray-900">৳ 510</span></p>
+                <button class="bg-[#f85606] text-white px-4 py-1.5 rounded text-xs font-bold shadow-md hover:bg-[#d04a05] transition">Buy again</button>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-lg shadow-sm overflow-hidden border border-gray-100">
+            <div class="flex justify-between items-center px-4 py-2 border-b bg-gray-50">
+                <span class="text-[10px] font-bold text-blue-600 uppercase tracking-widest"><i class="fas fa-store mr-1"></i> Icon Mobile</span>
+                <span class="text-[11px] text-red-500 font-bold uppercase">Cancelled</span>
+            </div>
+            <div class="p-4 flex gap-4 opacity-70">
+                <img src="https://via.placeholder.com/80" class="w-20 h-20 object-cover rounded border">
+                <div class="flex-1">
+                    <h3 class="text-sm font-medium text-gray-800 line-clamp-2">iPhone 15 Pro Matte Cover - Anti-Fingerprint</h3>
+                    <p class="text-[11px] text-gray-400 mt-1">Color Family: Matte Blue</p>
+                    <div class="flex justify-between items-end mt-2">
+                        <span class="text-sm font-bold text-gray-900">৳ 250</span>
+                        <span class="text-xs text-gray-500">Qty: 1</span>
+                    </div>
+                </div>
+            </div>
+            <div class="px-4 py-3 border-t flex justify-between items-center">
+                <p class="text-xs text-gray-500">Total (1 Item): <span class="font-bold text-gray-900">৳ 310</span></p>
+                <button class="border border-[#f85606] text-[#f85606] px-4 py-1.5 rounded text-xs font-bold hover:bg-orange-50 transition">Buy again</button>
+            </div>
+        </div>
+
+    </main>
+
+</body>
+</html>
