@@ -14,8 +14,10 @@
         .modal.hidden { opacity: 0; visibility: hidden; display: none; }
         @keyframes popIn { 0% { transform: scale(0.95); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
         .animate-pop { animation: popIn 0.2s ease-out forwards; }
-        #success-toast { transition: transform 0.4s cubic-bezier(0.18, 0.89, 0.32, 1.28); }
-        .toast-hidden { transform: translateY(150%); }
+        
+        /* টোস্ট এনিমেশন ঠিক করা হয়েছে */
+        #success-toast { transition: transform 0.4s cubic-bezier(0.18, 0.89, 0.32, 1.28), opacity 0.3s; }
+        .toast-hidden { transform: translateY(150%); opacity: 0; pointer-events: none; }
     </style>
 </head>
 <body class="bg-gray-50 text-gray-800">
@@ -31,7 +33,7 @@
                         <i class="fas fa-shopping-cart text-2xl text-gray-600"></i>
                         <span id="cart-count" class="absolute -top-2 -right-2 bg-red-500 text-white text-[10px] font-bold rounded-full px-1.5 border-2 border-white">0</span>
                     </div>
-                    <div onclick="toggleAccountModal()" class="cursor-pointer">
+                    <div id="user-profile-btn" onclick="toggleAccountModal()" class="cursor-pointer">
                         <div id="logged-out-icon" class="w-9 h-9 bg-gray-100 rounded-full flex items-center justify-center border">
                             <i class="fas fa-user text-gray-400"></i>
                         </div>
@@ -50,7 +52,7 @@
     <div id="success-toast" class="fixed bottom-10 left-1/2 -translate-x-1/2 z-[200] bg-[#1a1c24] text-white px-6 py-3 rounded-full shadow-2xl flex items-center gap-3 toast-hidden w-[90%] max-w-sm justify-between">
         <div class="flex items-center gap-2">
             <i class="fas fa-check-circle text-green-400 text-lg"></i>
-            <span class="text-sm font-medium">Successfully added to cart</span>
+            <span class="text-sm font-medium">পণ্য কার্টে যোগ করা হয়েছে</span>
         </div>
         <button onclick="toggleCart()" class="text-blue-400 text-xs font-bold underline">Go To Cart</button>
     </div>
@@ -104,12 +106,21 @@
             if (products.length === 0) { container.innerHTML = ""; return; }
             container.innerHTML = products.map(p => `
                 <div class="bg-white rounded p-3 border border-gray-100 hover:shadow-md cursor-pointer" onclick="openProductModal(${p.id})">
-                    <img src="${p.img}" class="w-full h-32 object-contain mb-3">
+                    <img src="${p.img}" class="w-full h-32 object-contain mb-3" onerror="this.src='https://via.placeholder.com/150'">
                     <h4 class="text-xs font-semibold h-8 overflow-hidden mb-1 text-gray-700">${p.name}</h4>
                     <p class="text-blue-600 font-bold text-sm mb-3">৳ ${p.price}</p>
                     <button onclick="event.stopPropagation(); handleAction('add', ${p.id})" class="w-full border border-blue-600 text-blue-600 py-1.5 rounded text-[10px] font-bold hover:bg-blue-600 hover:text-white transition uppercase">ADD TO CART</button>
                 </div>
             `).join('');
+        }
+
+        // টোস্ট অটো-হাইড করার জন্য আপডেট
+        function showToast() {
+            const toast = document.getElementById('success-toast');
+            toast.classList.remove('toast-hidden');
+            setTimeout(() => {
+                toast.classList.add('toast-hidden');
+            }, 3000);
         }
 
         function handleAction(action, pid) {
@@ -123,12 +134,6 @@
             updateCart();
         }
 
-        function showToast() {
-            const toast = document.getElementById('success-toast');
-            toast.classList.remove('toast-hidden');
-            setTimeout(() => toast.classList.add('toast-hidden'), 3000);
-        }
-
         function updateCart() {
             document.getElementById('cart-count').innerText = cart.length;
             document.getElementById('cart-items').innerHTML = cart.map((i, idx) => `
@@ -140,20 +145,7 @@
             document.getElementById('cart-total').innerText = cart.reduce((s, i) => s + parseFloat(i.price), 0);
         }
 
-        function openProductModal(id) {
-            const p = products.find(item => item.id == id);
-            if(!p) return;
-            document.getElementById('modal-content').innerHTML = `
-                <div class="flex flex-col items-center">
-                    <img src="${p.img}" class="w-48 h-48 object-contain mb-4">
-                    <h2 class="text-lg font-bold text-center">${p.name}</h2>
-                    <p class="text-xl font-bold text-blue-600 my-3">৳ ${p.price}</p>
-                    <button onclick="handleAction('add', ${p.id}); closeProductModal();" class="w-full bg-blue-600 text-white py-3 rounded font-bold uppercase shadow-lg">Add to Cart</button>
-                </div>
-            `;
-            document.getElementById('product-modal').classList.remove('hidden');
-        }
-
+        // ফর্ম সাবমিশন এবং শিটে ডাটা পাঠানো
         document.getElementById('profile-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             const userData = { 
@@ -161,23 +153,48 @@
                 phone: document.getElementById('user-phone').value, 
                 address: document.getElementById('user-address').value 
             };
+            
+            // লোকাল স্টোরেজে স্থায়ীভাবে সেভ
             localStorage.setItem('iconBazarUser', JSON.stringify(userData));
-            await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(userData) });
+
+            // গুগল শিটে পাঠানো (Sheet2)
+            try {
+                await fetch(SCRIPT_URL, { 
+                    method: 'POST', 
+                    mode: 'no-cors', 
+                    body: JSON.stringify(userData) 
+                });
+            } catch (err) { console.log("Sheet backup triggered"); }
+
             location.reload();
         });
+
+        function loadProfile() {
+            const user = JSON.parse(localStorage.getItem('iconBazarUser'));
+            if(user) {
+                document.getElementById('logged-out-icon').classList.add('hidden');
+                document.getElementById('logged-in-photo').classList.remove('hidden');
+                document.getElementById('logged-in-photo').src = 'https://api.dicebear.com/7.x/avataaars/svg?seed=' + encodeURIComponent(user.name);
+            }
+        }
 
         function remove(idx) { cart.splice(idx, 1); localStorage.setItem('iconBazarCart', JSON.stringify(cart)); updateCart(); }
         function checkout() { if (cart.length === 0) return; window.location.href = "checkout.html"; }
         function closeProductModal() { document.getElementById('product-modal').classList.add('hidden'); }
         function toggleAccountModal() { document.getElementById('account-modal').classList.toggle('hidden'); }
         function toggleCart() { document.getElementById('cart-sidebar').classList.toggle('translate-x-full'); }
-        function loadProfile() {
-            const user = JSON.parse(localStorage.getItem('iconBazarUser'));
-            if(user) {
-                document.getElementById('logged-out-icon').classList.add('hidden');
-                document.getElementById('logged-in-photo').classList.remove('hidden');
-                document.getElementById('logged-in-photo').src = 'https://api.dicebear.com/7.x/avataaars/svg?seed=' + user.name;
-            }
+        function openProductModal(id) {
+            const p = products.find(item => item.id == id);
+            if(!p) return;
+            document.getElementById('modal-content').innerHTML = `
+                <div class="flex flex-col items-center">
+                    <img src="${p.img}" class="w-48 h-48 object-contain mb-4" onerror="this.src='https://via.placeholder.com/150'">
+                    <h2 class="text-lg font-bold text-center">${p.name}</h2>
+                    <p class="text-xl font-bold text-blue-600 my-3">৳ ${p.price}</p>
+                    <button onclick="handleAction('add', ${p.id}); closeProductModal();" class="w-full bg-blue-600 text-white py-3 rounded font-bold uppercase shadow-lg">Add to Cart</button>
+                </div>
+            `;
+            document.getElementById('product-modal').classList.remove('hidden');
         }
     </script>
 </body>
