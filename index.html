@@ -70,9 +70,9 @@
             <button onclick="toggleProfileDrawer()" class="ml-auto text-white"><i class="fas fa-times text-xl"></i></button>
         </div>
         <div class="py-4">
-            <a href="#" class="px-6 py-3 flex items-center gap-4 hover:bg-gray-50 border-b border-gray-50"><i class="fas fa-user-circle text-blue-500"></i><span class="text-sm font-semibold">My Profile</span></a>
-            <a href="#" class="px-6 py-3 flex items-center gap-4 hover:bg-gray-50 border-b border-gray-50"><i class="fas fa-map-marker-alt text-green-500"></i><span class="text-sm font-semibold">My Address</span></a>
-            <a href="#" class="px-6 py-3 flex items-center gap-4 hover:bg-gray-50 border-b border-gray-50"><i class="fas fa-box text-orange-500"></i><span class="text-sm font-semibold">Order Information</span></a>
+            <a href="profile.html" class="px-6 py-3 flex items-center gap-4 hover:bg-gray-50 border-b border-gray-50"><i class="fas fa-user-circle text-blue-500"></i><span class="text-sm font-semibold">My Profile</span></a>
+            <a href="address.html" class="px-6 py-3 flex items-center gap-4 hover:bg-gray-50 border-b border-gray-50"><i class="fas fa-map-marker-alt text-green-500"></i><span class="text-sm font-semibold">My Address</span></a>
+            <a href="orders.html" class="px-6 py-3 flex items-center gap-4 hover:bg-gray-50 border-b border-gray-50"><i class="fas fa-box text-orange-500"></i><span class="text-sm font-semibold">Order Information</span></a>
             <div onclick="logout()" class="px-6 py-3 flex items-center gap-4 hover:bg-red-50 text-red-500 mt-10 cursor-pointer"><i class="fas fa-sign-out-alt"></i><span class="text-sm font-bold">Sign Out</span></div>
         </div>
     </div>
@@ -119,10 +119,9 @@
     </div>
 
     <script>
-        // আপনার নতুন গুগল অ্যাপস স্ক্রিপ্ট লিঙ্ক
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyuQZlWtQsRmodsjMbqjTqjPtEO9d-oUysUwmbqxhGgRhLYlbdgWoLZP2rEsap6uEnM/exec";
         
-        let products = []; // এখন এটি শিট থেকে লোড হবে
+        let products = []; 
         let cart = JSON.parse(localStorage.getItem('iconBazarCart')) || [];
 
         window.onload = function() { 
@@ -131,7 +130,6 @@
             updateCart(); 
         };
 
-        // গুগল শিট থেকে প্রোডাক্ট লোড করার ফাংশন
         async function loadProducts() {
             const container = document.getElementById('product-container');
             container.innerHTML = "<p class='col-span-full text-center py-10'>প্রোডাক্ট লোড হচ্ছে...</p>";
@@ -213,7 +211,6 @@
 
         function closeProductModal() { document.getElementById('product-modal').classList.add('hidden'); }
         
-        // টোস্ট ৩ সেকেন্ড পর নিজে থেকেই হাইড হবে
         function showToast() { 
             const toast = document.getElementById('success-toast');
             toast.classList.remove('toast-hidden'); 
@@ -227,7 +224,6 @@
                 document.getElementById('auth-btn').classList.add('hidden');
                 document.getElementById('logged-out-icon').classList.add('hidden');
                 document.getElementById('logged-in-photo').classList.remove('hidden');
-                // Dicebear API দিয়ে অটো প্রোফাইল ফটো তৈরি
                 const photoUrl = 'https://api.dicebear.com/7.x/avataaars/svg?seed=' + encodeURIComponent(user.name);
                 document.getElementById('logged-in-photo').src = photoUrl;
                 document.getElementById('drawer-user-img').src = photoUrl;
@@ -235,7 +231,6 @@
             }
         }
 
-        // ইউজার ডাটা শিটে পাঠানো এবং ফোনে সেভ রাখা
         document.getElementById('profile-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             const userData = { 
@@ -244,10 +239,8 @@
                 address: document.getElementById('user-address').value 
             };
             
-            // ফোনে সেভ করা
             localStorage.setItem('iconBazarUser', JSON.stringify(userData));
 
-            // গুগল শিটে (Sheet2 তে) পাঠানো
             try {
                 await fetch(SCRIPT_URL, { 
                     method: 'POST', 
