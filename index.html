@@ -14,8 +14,9 @@
         .modal.hidden { opacity: 0; visibility: hidden; display: none; }
         @keyframes popIn { 0% { transform: scale(0.95); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
         .animate-pop { animation: popIn 0.2s ease-out forwards; }
-        #success-toast { transition: transform 0.4s cubic-bezier(0.18, 0.89, 0.32, 1.28), opacity 0.3s; }
-        .toast-hidden { transform: translateY(150%); opacity: 0; pointer-events: none; }
+        #profile-drawer { transition: transform 0.3s ease-in-out; }
+        #success-toast { transition: transform 0.4s cubic-bezier(0.18, 0.89, 0.32, 1.28); }
+        .toast-hidden { transform: translateY(150%); }
     </style>
 </head>
 <body class="bg-gray-50 text-gray-800">
@@ -24,36 +25,62 @@
         <div class="container mx-auto px-4">
             <div class="flex justify-between items-center py-3 border-b border-gray-100">
                 <div class="flex items-center gap-3">
-                    <h1 class="text-xl font-bold text-blue-600 tracking-tighter uppercase">ICON BAZAR BD</h1>
+                    <i class="fas fa-bars text-xl cursor-pointer md:hidden text-gray-600" onclick="toggleProfileDrawer()"></i>
+                    <h1 class="text-xl font-bold text-blue-600 tracking-tighter uppercase">Icon Bazar BD</h1>
                 </div>
                 <div class="flex items-center gap-5">
                     <div class="relative cursor-pointer" onclick="toggleCart()">
                         <i class="fas fa-shopping-cart text-2xl text-gray-600"></i>
                         <span id="cart-count" class="absolute -top-2 -right-2 bg-red-500 text-white text-[10px] font-bold rounded-full px-1.5 border-2 border-white">0</span>
                     </div>
-                    <div id="user-profile-btn" onclick="toggleAccountModal()" class="cursor-pointer">
+                    <div id="user-profile-btn" onclick="handleProfileClick()" class="cursor-pointer">
                         <div id="logged-out-icon" class="w-9 h-9 bg-gray-100 rounded-full flex items-center justify-center border">
                             <i class="fas fa-user text-gray-400"></i>
                         </div>
                         <img id="logged-in-photo" class="w-9 h-9 rounded-full border hidden shadow-sm" src="" alt="User">
                     </div>
+                    <button id="auth-btn" onclick="toggleAccountModal()" class="bg-blue-600 text-white px-5 py-1.5 rounded text-sm font-semibold hover:bg-blue-700 transition">Sign in</button>
+                </div>
+            </div>
+            <div class="py-3">
+                <div class="relative max-w-2xl mx-auto">
+                    <input type="text" placeholder="Search for sunglasses, covers, jewelry..." class="w-full border border-gray-300 rounded py-2 px-4 outline-none focus:border-blue-400 text-sm">
+                    <button class="absolute right-0 top-0 h-full px-4 text-gray-400"><i class="fas fa-search"></i></button>
                 </div>
             </div>
         </div>
     </header>
 
+    <div class="bg-white border-b overflow-x-auto no-scrollbar">
+        <div class="container mx-auto px-4 flex gap-4 py-3 whitespace-nowrap text-sm font-medium">
+            <button class="bg-blue-600 text-white px-5 py-1 rounded-full">হোম</button>
+            <button class="bg-gray-100 px-5 py-1 rounded-full hover:bg-blue-100 transition">সানগ্লাস</button>
+            <button class="bg-gray-100 px-5 py-1 rounded-full hover:bg-blue-100 transition">মোবাইল কভার</button>
+            <button class="bg-gray-100 px-5 py-1 rounded-full hover:bg-blue-100 transition">জুয়েলারি</button>
+        </div>
+    </div>
+
+    <div id="profile-drawer" class="fixed top-0 right-0 h-full w-72 bg-white shadow-2xl z-[110] translate-x-full">
+        <div class="bg-blue-600 p-6 text-white flex items-center gap-3">
+            <img id="drawer-user-img" class="w-12 h-12 rounded-full border-2 border-white" src="https://via.placeholder.com/50">
+            <div>
+                <p id="drawer-user-name" class="font-bold text-sm">Guest User</p>
+                <p class="text-[10px] opacity-80 uppercase font-bold tracking-tighter">Icon Bazar BD</p>
+            </div>
+            <button onclick="toggleProfileDrawer()" class="ml-auto text-white"><i class="fas fa-times text-xl"></i></button>
+        </div>
+        <div class="py-4">
+            <a href="#" class="px-6 py-3 flex items-center gap-4 hover:bg-gray-50 border-b border-gray-50"><i class="fas fa-user-circle text-blue-500"></i><span class="text-sm font-semibold">My Profile</span></a>
+            <a href="#" class="px-6 py-3 flex items-center gap-4 hover:bg-gray-50 border-b border-gray-50"><i class="fas fa-map-marker-alt text-green-500"></i><span class="text-sm font-semibold">My Address</span></a>
+            <a href="#" class="px-6 py-3 flex items-center gap-4 hover:bg-gray-50 border-b border-gray-50"><i class="fas fa-box text-orange-500"></i><span class="text-sm font-semibold">Order Information</span></a>
+            <div onclick="logout()" class="px-6 py-3 flex items-center gap-4 hover:bg-red-50 text-red-500 mt-10 cursor-pointer"><i class="fas fa-sign-out-alt"></i><span class="text-sm font-bold">Sign Out</span></div>
+        </div>
+    </div>
+
     <main class="container mx-auto px-4 py-6">
-        <h3 class="text-lg font-bold flex items-center gap-2 mb-5"><i class="fas fa-bolt text-yellow-500"></i> Flash Sale</h3>
+        <h3 class="text-lg font-bold flex items-center gap-2 mb-5"><i class="fas fa-bolt text-yellow-500"></i> Quick Deal</h3>
         <div id="product-container" class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4"></div>
     </main>
-
-    <div id="success-toast" class="fixed bottom-10 left-1/2 -translate-x-1/2 z-[200] bg-[#1a1c24] text-white px-6 py-3 rounded-full shadow-2xl flex items-center gap-3 toast-hidden w-[90%] max-w-sm justify-between">
-        <div class="flex items-center gap-2">
-            <i class="fas fa-check-circle text-green-400 text-lg"></i>
-            <span class="text-sm font-medium">পণ্য কার্টে যোগ করা হয়েছে</span>
-        </div>
-        <button onclick="toggleCart()" class="text-blue-400 text-xs font-bold underline">Go To Cart</button>
-    </div>
 
     <div id="product-modal" class="modal hidden fixed inset-0 z-[150] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
         <div class="bg-white w-full max-w-lg rounded-2xl overflow-hidden animate-pop relative">
@@ -62,12 +89,19 @@
         </div>
     </div>
 
+    <div id="success-toast" class="fixed bottom-0 left-0 w-full z-[200] toast-hidden px-4 pb-10 pointer-events-none">
+        <div class="max-w-md mx-auto bg-gray-900 text-white py-4 px-6 rounded-xl shadow-2xl flex justify-between items-center pointer-events-auto">
+            <div class="flex items-center gap-3"><i class="fas fa-check-circle text-green-400 text-xl"></i><span class="text-sm font-medium">Successfully added to cart</span></div>
+            <button onclick="toggleCart(); hideToast();" class="text-blue-400 font-bold text-sm uppercase">Go To Cart</button>
+        </div>
+    </div>
+
     <div id="cart-sidebar" class="fixed top-0 right-0 h-full w-80 bg-white shadow-2xl translate-x-full transition-transform duration-300 z-[110] p-6 flex flex-col">
         <div class="flex justify-between items-center border-b pb-4 mb-4"><h3 class="text-xl font-bold">🛒 Shopping Bag</h3><button onclick="toggleCart()" class="text-red-500"><i class="fas fa-times text-2xl"></i></button></div>
         <div id="cart-items" class="flex-grow space-y-4 overflow-y-auto"></div>
         <div class="border-t mt-6 pt-4">
             <p class="flex justify-between font-bold mb-4 text-lg"><span>Total:</span> <span id="cart-total">0</span> ৳</p>
-            <button onclick="checkout()" class="w-full bg-[#f85606] text-white py-3 rounded font-bold uppercase shadow-lg">Confirm Order</button>
+            <button onclick="checkout()" class="w-full bg-blue-600 text-white py-3 rounded font-bold uppercase shadow-lg active:scale-95 transition-transform">Confirm Order</button>
         </div>
     </div>
 
@@ -76,57 +110,68 @@
             <button onclick="toggleAccountModal()" class="absolute top-4 right-4 text-gray-400"><i class="fas fa-times-circle text-2xl"></i></button>
             <h3 class="text-lg font-bold text-center uppercase mb-6">Login / Sign Up</h3>
             <form id="profile-form" class="space-y-4">
-                <input type="text" id="user-phone" placeholder="মোবাইল নম্বর" class="w-full border p-3 rounded text-sm outline-none" required>
-                <input type="text" id="user-name" placeholder="আপনার নাম" class="w-full border p-3 rounded text-sm outline-none" required>
-                <textarea id="user-address" placeholder="ঠিকানা" class="w-full border p-3 rounded text-sm outline-none" rows="3" required></textarea>
+                <input type="text" id="user-phone" placeholder="মোবাইল নম্বর" class="w-full border p-3 rounded text-sm" required>
+                <input type="text" id="user-name" placeholder="আপনার নাম" class="w-full border p-3 rounded text-sm" required>
+                <textarea id="user-address" placeholder="ঠিকানা" class="w-full border p-3 rounded text-sm" rows="3" required></textarea>
                 <button type="submit" class="w-full bg-blue-600 text-white py-3 rounded font-bold uppercase">Save & Login</button>
             </form>
         </div>
     </div>
 
     <script>
+        // আপনার নতুন গুগল অ্যাপস স্ক্রিপ্ট লিঙ্ক
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyuQZlWtQsRmodsjMbqjTqjPtEO9d-oUysUwmbqxhGgRhLYlbdgWoLZP2rEsap6uEnM/exec";
-        let products = [];
+        
+        let products = []; // এখন এটি শিট থেকে লোড হবে
         let cart = JSON.parse(localStorage.getItem('iconBazarCart')) || [];
 
-        window.onload = function() { loadProducts(); loadProfile(); updateCart(); };
+        window.onload = function() { 
+            loadProducts(); 
+            loadProfile(); 
+            updateCart(); 
+        };
 
+        // গুগল শিট থেকে প্রোডাক্ট লোড করার ফাংশন
         async function loadProducts() {
+            const container = document.getElementById('product-container');
+            container.innerHTML = "<p class='col-span-full text-center py-10'>প্রোডাক্ট লোড হচ্ছে...</p>";
             try {
                 const response = await fetch(SCRIPT_URL + "?action=getProducts");
                 products = await response.json();
                 displayProducts();
-            } catch (e) { console.log("Error loading products"); }
+            } catch (e) {
+                container.innerHTML = "<p class='col-span-full text-center py-10 text-red-500'>শিট থেকে প্রোডাক্ট পাওয়া যায়নি!</p>";
+            }
         }
 
         function displayProducts() {
             const container = document.getElementById('product-container');
             if (products.length === 0) { container.innerHTML = ""; return; }
             container.innerHTML = products.map(p => `
-                <div class="bg-white rounded p-3 border border-gray-100 hover:shadow-md cursor-pointer" onclick="openProductModal(${p.id})">
-                    <img src="${p.img}" class="w-full h-32 object-contain mb-3" onerror="this.src='https://via.placeholder.com/150'">
+                <div class="bg-white rounded p-3 border border-gray-100 hover:shadow-md transition relative cursor-pointer" onclick="openProductModal(${p.id})">
+                    <span class="absolute top-2 left-2 bg-red-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full z-10">DISCOUNT</span>
+                    <img src="${p.img}" class="w-full h-32 object-contain mb-3" onerror="this.src='https://via.placeholder.com/200'">
                     <h4 class="text-xs font-semibold h-8 overflow-hidden mb-1 text-gray-700">${p.name}</h4>
                     <p class="text-blue-600 font-bold text-sm mb-3">৳ ${p.price}</p>
-                    <button onclick="event.stopPropagation(); handleAction('add', ${p.id})" class="w-full border border-blue-600 text-blue-600 py-1.5 rounded text-[10px] font-bold hover:bg-blue-600 hover:text-white transition uppercase">ADD TO CART</button>
+                    <div class="flex flex-col gap-2">
+                        <button onclick="event.stopPropagation(); handleAction('add', ${p.id})" class="w-full border border-blue-600 text-blue-600 py-1.5 rounded text-[10px] font-bold hover:bg-blue-600 hover:text-white transition">ADD TO CART</button>
+                        <button onclick="event.stopPropagation(); handleAction('buy', ${p.id})" class="w-full bg-blue-600 text-white py-1.5 rounded text-[10px] font-bold shadow-md">BUY NOW</button>
+                    </div>
                 </div>
             `).join('');
         }
 
-        function showToast() {
-            const toast = document.getElementById('success-toast');
-            toast.classList.remove('toast-hidden');
-            setTimeout(() => { toast.classList.add('toast-hidden'); }, 3000);
-        }
-
         function handleAction(action, pid) {
-            if(!localStorage.getItem('iconBazarUser')) { toggleAccountModal(); return; }
+            if(!isUserRegistered()) { toggleAccountModal(); return; }
             const p = products.find(i => i.id == pid);
+            if(!p) return;
             if(!cart.find(i => i.id == pid)) {
                 cart.push(p);
                 localStorage.setItem('iconBazarCart', JSON.stringify(cart));
-                showToast();
             }
             updateCart();
+            showToast();
+            if(action === 'buy') toggleCart();
         }
 
         function updateCart() {
@@ -140,6 +185,57 @@
             document.getElementById('cart-total').innerText = cart.reduce((s, i) => s + parseFloat(i.price), 0);
         }
 
+        function remove(idx) { cart.splice(idx, 1); localStorage.setItem('iconBazarCart', JSON.stringify(cart)); updateCart(); }
+        
+        function checkout() { 
+            if (cart.length === 0) { alert("কার্ট খালি!"); return; }
+            window.location.href = "checkout.html"; 
+        }
+
+        function openProductModal(id) {
+            const p = products.find(item => item.id == id);
+            if(!p) return;
+            const content = document.getElementById('modal-content');
+            content.innerHTML = `
+                <div class="flex flex-col items-center">
+                    <img src="${p.img}" class="w-48 h-48 object-contain mb-4" onerror="this.src='https://via.placeholder.com/200'">
+                    <h2 class="text-lg font-bold text-center">${p.name}</h2>
+                    <div class="flex items-center gap-3 my-3"><span class="text-xl font-bold text-blue-600">৳ ${p.price}</span></div>
+                    <p class="text-gray-600 text-sm text-center mb-6">প্রিমিয়াম কোয়ালিটি পণ্য।</p>
+                    <div class="flex gap-3 w-full">
+                        <button onclick="handleAction('add', ${p.id}); closeProductModal();" class="flex-1 border border-blue-600 text-blue-600 py-2.5 rounded font-bold">Add to Cart</button>
+                        <button onclick="handleAction('buy', ${p.id}); closeProductModal();" class="flex-1 bg-blue-600 text-white py-2.5 rounded font-bold">Buy Now</button>
+                    </div>
+                </div>
+            `;
+            document.getElementById('product-modal').classList.remove('hidden');
+        }
+
+        function closeProductModal() { document.getElementById('product-modal').classList.add('hidden'); }
+        
+        // টোস্ট ৩ সেকেন্ড পর নিজে থেকেই হাইড হবে
+        function showToast() { 
+            const toast = document.getElementById('success-toast');
+            toast.classList.remove('toast-hidden'); 
+            setTimeout(hideToast, 3000); 
+        }
+        function hideToast() { document.getElementById('success-toast').classList.add('toast-hidden'); }
+
+        function loadProfile() {
+            const user = JSON.parse(localStorage.getItem('iconBazarUser'));
+            if(user) {
+                document.getElementById('auth-btn').classList.add('hidden');
+                document.getElementById('logged-out-icon').classList.add('hidden');
+                document.getElementById('logged-in-photo').classList.remove('hidden');
+                // Dicebear API দিয়ে অটো প্রোফাইল ফটো তৈরি
+                const photoUrl = 'https://api.dicebear.com/7.x/avataaars/svg?seed=' + encodeURIComponent(user.name);
+                document.getElementById('logged-in-photo').src = photoUrl;
+                document.getElementById('drawer-user-img').src = photoUrl;
+                document.getElementById('drawer-user-name').innerText = user.name;
+            }
+        }
+
+        // ইউজার ডাটা শিটে পাঠানো এবং ফোনে সেভ রাখা
         document.getElementById('profile-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             const userData = { 
@@ -147,40 +243,29 @@
                 phone: document.getElementById('user-phone').value, 
                 address: document.getElementById('user-address').value 
             };
+            
+            // ফোনে সেভ করা
             localStorage.setItem('iconBazarUser', JSON.stringify(userData));
+
+            // গুগল শিটে (Sheet2 তে) পাঠানো
             try {
-                await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(userData) });
-                location.reload();
-            } catch (err) { console.log("Network error"); }
+                await fetch(SCRIPT_URL, { 
+                    method: 'POST', 
+                    mode: 'no-cors', 
+                    body: JSON.stringify(userData) 
+                });
+                location.reload(); 
+            } catch (err) {
+                alert("ডাটা সেভ করতে সমস্যা হয়েছে!");
+            }
         });
 
-        function loadProfile() {
-            const user = JSON.parse(localStorage.getItem('iconBazarUser'));
-            if(user) {
-                document.getElementById('logged-out-icon').classList.add('hidden');
-                document.getElementById('logged-in-photo').classList.remove('hidden');
-                document.getElementById('logged-in-photo').src = 'https://api.dicebear.com/7.x/avataaars/svg?seed=' + encodeURIComponent(user.name);
-            }
-        }
-
-        function remove(idx) { cart.splice(idx, 1); localStorage.setItem('iconBazarCart', JSON.stringify(cart)); updateCart(); }
-        function checkout() { if (cart.length === 0) return; window.location.href = "checkout.html"; }
-        function closeProductModal() { document.getElementById('product-modal').classList.add('hidden'); }
+        function logout() { localStorage.removeItem('iconBazarUser'); location.reload(); }
         function toggleAccountModal() { document.getElementById('account-modal').classList.toggle('hidden'); }
         function toggleCart() { document.getElementById('cart-sidebar').classList.toggle('translate-x-full'); }
-        function openProductModal(id) {
-            const p = products.find(item => item.id == id);
-            if(!p) return;
-            document.getElementById('modal-content').innerHTML = `
-                <div class="flex flex-col items-center">
-                    <img src="${p.img}" class="w-48 h-48 object-contain mb-4" onerror="this.src='https://via.placeholder.com/150'">
-                    <h2 class="text-lg font-bold text-center">${p.name}</h2>
-                    <p class="text-xl font-bold text-blue-600 my-3">৳ ${p.price}</p>
-                    <button onclick="handleAction('add', ${p.id}); closeProductModal();" class="w-full bg-blue-600 text-white py-3 rounded font-bold uppercase shadow-lg">Add to Cart</button>
-                </div>
-            `;
-            document.getElementById('product-modal').classList.remove('hidden');
-        }
+        function toggleProfileDrawer() { document.getElementById('profile-drawer').classList.toggle('translate-x-full'); }
+        function isUserRegistered() { return localStorage.getItem('iconBazarUser') !== null; }
+        function handleProfileClick() { if(isUserRegistered()) toggleProfileDrawer(); else toggleAccountModal(); }
     </script>
 </body>
 </html>
